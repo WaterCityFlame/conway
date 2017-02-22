@@ -1,0 +1,70 @@
+body {
+  font-family: 'Helvetica Neue', Verdana, Helvetica, Arial, sans-serif;
+  max-width: 600px;
+  margin: 0 auto;
+  padding-top: 72px;
+  -webkit-font-smoothing: antialiased;
+  font-size: 1.125em;
+  color: #333;
+  line-height: 1.5em;
+}
+
+h1, h2, h3 {
+  color: #000;
+}
+h1 {
+  font-size: 2.5em
+}
+
+h2 {
+  font-size: 2em
+}
+
+h3 {
+  font-size: 1.5em
+}
+
+a {
+  text-decoration: none;
+  color: #09f;
+}
+
+a:hover {
+  text-decoration: underline;
+}
+
+p {
+	margin: 0;
+}
+.cell {
+	width: 1.5em; 
+	height: 1.5em; 
+	float: left;
+	margin: 0 1px;
+}
+
+.alive {
+	background-color: #000;
+}
+
+.dead {
+	background-color: lightGrey;
+}
+
+.row {
+	display: block;
+	width: 100%;
+	height: 1.5em;
+	margin: 2px 0;
+}
+
+button {
+	background-color: limeGreen;
+	border-style: none;
+	height: 2em;
+	margin: auto;
+}
+
+button:hover {
+	background-color: paleGreen;
+}
