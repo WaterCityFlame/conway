@@ -60,10 +60,10 @@
    (start-button)])
 
 (defn generations-loop [running]
-  (go-loop [t (tick-every 1000 running)]
-           (when (async/<! t)
-             (next-state game-state))
-           (recur t)))
+  (let [t (tick-every 1000 running)] 
+    (go 
+      (while (async/<! t) 
+        (next-state game-state)))))
 ;; -------------------------
 ;; Initialize app
 
