@@ -15,11 +15,10 @@
 
 (defn tick-every [ms runner]
   (let [c (async/chan)]
-    (go-loop [] 
-             (async/<! (async/timeout ms)) 
-             (when (:running @runner) (async/>! c :tick)) 
-             (recur)
-                     )
+    (go 
+      (while true
+        (async/<! (async/timeout ms))
+        (when (:running @runner) (async/>! c :tick))))
     c))
 
 (defn stop [something]
