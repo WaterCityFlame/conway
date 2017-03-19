@@ -5,60 +5,90 @@
 (def game-state (reagent/atom (game/alternate 9 9 
                              (game/alternate 9 10 
                                         (game/alternate 9 8 
-                                               (game/Game-conway 19 19))))))
+                                               (game/Game-conway 40 17))))))
 
 (defn next-state [game]
   (swap! game game/play-round))
 
-(defn stop [something]
+(defn toggle [something]
   (swap! something update :running #(not (:running @something))))
 
-(def game-switch (atom {:running true}))
+(defn generations-loop [switch]
+    (js/setInterval #(when (:running @switch) 
+                       (next-state game-state)) 
+                     1500))
+
+(def game-switch (atom {:running true 
+                        :run-function (fn [] (generations-loop game-switch))
+                        :btn-class "pure-button-active"}))
 
 (defn click-cell [x y game]
     (swap! game #(game/alternate x y %)))
 
+(defn toggle-class [id toggled-class]
+  (let [el-classList (.-classList (.getElementById js/document id))]
+    (if (.contains el-classList toggled-class)
+      (.remove el-classList toggled-class)
+      (.add el-classList toggled-class))))
+
+(defn toggle-html [id html1 html2]
+  (let [el (.getElementById js/document id)]
+    (if (= (.-innerHTML el) html1)
+      (set! (.-innerHTML el) html2)
+      (set! (.-innerHTML el) html1))))
 ;; -------------------------
 ;; Views
+(defn start-button-clicked [] 
+  (do 
+    (toggle-class "start" "pure-button-active") 
+    (toggle-html "start" "Start" "Stop")
+    (toggle game-switch)))
 
-(defn home-page []
-  [:div [:h2 "Conway's Game of Life"]])
+(defn start-button []
+  (let [] 
+    [:button.pure-button 
+     {:class "pure-button pure-button-active"
+      :onClick start-button-clicked
+      :key "start" :id "start" } 
+     "Stop"]))
+
+(defn title []
+  [:div {:id "title-bar" :class "pure-u-1"}
+   [:h1 "An Implementation of Conway's Game of Life"]
+   (start-button)])
 
 (defn cell [x y game]
   (if (game/alive? x y @game)
-    [:div {:class "cell alive" :key (str "[" x " " y "]")
+    [:td {:class "cell alive" :key (str "[" x " " y "]")
            :onClick (fn [] (click-cell x y game))} ] 
-    [:div {:class "cell dead" :key (str "[" x " " y "]")
+    [:td {:class "cell dead" :key (str "[" x " " y "]")
            :onClick (fn [] (click-cell x y game))} ]))
 
 (defn row [cells]
-  [:div {:class "row" :key (rand 100)} cells])
-
-(defn start-button []
-  [:button {:onClick #(do (stop game-switch) (println @game-switch)) :key "start"} "Start/Stop"])
+  [:tr {:class "row" 
+        :key (rand 100) 
+        :style {:width (str (* 1.7 (count cells)) "em")}} 
+   cells])
 
 (defn grid []
-  [:div {:key "game"} 
-   [:div {:key "grid" } 
-    (doall (map row 
-         (partition (:width @game-state) 
-                    (for [y (range (:height @game-state)) 
-                          x (range (:width @game-state))] 
-                      (cell x y game-state)))))]
-   (start-button)])
+ [:table {:key "grid" :id "grid" :class "pure-u-23-24"} [:tbody
+  (doall (map row 
+       (partition (:width @game-state) 
+                  (for [y (range (:height @game-state)) 
+                        x (range (:width @game-state))] 
+                    (cell x y game-state)))))]])
 
-(defn generations-loop []
-  (do (next-state game-state) 
-      (js/setTimeout #(generations-loop)
-                     1000)))
+(defn app []
+  [:div.app {:class "pure-g"}
+   (grid)
+   (title)])
 ;; -------------------------
 ;; Initialize app
 
 (defn mount-root []
-  (reagent/render-component [grid] (.getElementById js/document "app")))
+  (reagent/render-component [app] (.getElementById js/document "app")))
 
 (defn init! []
   (do 
-    (reagent/render-component [start-button] (.getElementById js/document "app")) 
     (mount-root)
-    (generations-loop)))
+    (generations-loop game-switch)))

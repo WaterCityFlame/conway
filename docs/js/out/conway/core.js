@@ -3,75 +3,105 @@ goog.provide('conway.core');
 goog.require('cljs.core');
 goog.require('reagent.core');
 goog.require('conway.game');
-conway.core.game_state = reagent.core.atom.call(null,conway.game.alternate.call(null,(9),(9),conway.game.alternate.call(null,(9),(10),conway.game.alternate.call(null,(9),(8),conway.game.Game_conway.call(null,(19),(19))))));
+conway.core.game_state = reagent.core.atom.call(null,conway.game.alternate.call(null,(9),(9),conway.game.alternate.call(null,(9),(10),conway.game.alternate.call(null,(9),(8),conway.game.Game_conway.call(null,(40),(17))))));
 conway.core.next_state = (function conway$core$next_state(game){
 return cljs.core.swap_BANG_.call(null,game,conway.game.play_round);
 });
-conway.core.stop = (function conway$core$stop(something){
+conway.core.toggle = (function conway$core$toggle(something){
 return cljs.core.swap_BANG_.call(null,something,cljs.core.update,new cljs.core.Keyword(null,"running","running",1554969103),(function (){
 return cljs.core.not.call(null,new cljs.core.Keyword(null,"running","running",1554969103).cljs$core$IFn$_invoke$arity$1(cljs.core.deref.call(null,something)));
 }));
 });
-conway.core.game_switch = cljs.core.atom.call(null,new cljs.core.PersistentArrayMap(null, 1, [new cljs.core.Keyword(null,"running","running",1554969103),true], null));
+conway.core.generations_loop = (function conway$core$generations_loop(switch$){
+return setInterval((function (){
+if(cljs.core.truth_(new cljs.core.Keyword(null,"running","running",1554969103).cljs$core$IFn$_invoke$arity$1(cljs.core.deref.call(null,switch$)))){
+return conway.core.next_state.call(null,conway.core.game_state);
+} else {
+return null;
+}
+}),(1500));
+});
+conway.core.game_switch = cljs.core.atom.call(null,new cljs.core.PersistentArrayMap(null, 3, [new cljs.core.Keyword(null,"running","running",1554969103),true,new cljs.core.Keyword(null,"run-function","run-function",-475080789),(function (){
+return conway.core.generations_loop.call(null,conway.core.game_switch);
+}),new cljs.core.Keyword(null,"btn-class","btn-class",1476521100),"pure-button-active"], null));
 conway.core.click_cell = (function conway$core$click_cell(x,y,game){
-return cljs.core.swap_BANG_.call(null,game,(function (p1__23252_SHARP_){
-return conway.game.alternate.call(null,x,y,p1__23252_SHARP_);
+return cljs.core.swap_BANG_.call(null,game,(function (p1__23272_SHARP_){
+return conway.game.alternate.call(null,x,y,p1__23272_SHARP_);
 }));
 });
-conway.core.home_page = (function conway$core$home_page(){
-return new cljs.core.PersistentVector(null, 2, 5, cljs.core.PersistentVector.EMPTY_NODE, [new cljs.core.Keyword(null,"div","div",1057191632),new cljs.core.PersistentVector(null, 2, 5, cljs.core.PersistentVector.EMPTY_NODE, [new cljs.core.Keyword(null,"h2","h2",-372662728),"Conway's Game of Life"], null)], null);
+conway.core.toggle_class = (function conway$core$toggle_class(id,toggled_class){
+var el_classList = document.getElementById(id).classList;
+if(cljs.core.truth_(el_classList.contains(toggled_class))){
+return el_classList.remove(toggled_class);
+} else {
+return el_classList.add(toggled_class);
+}
+});
+conway.core.toggle_html = (function conway$core$toggle_html(id,html1,html2){
+var el = document.getElementById(id);
+if(cljs.core._EQ_.call(null,el.innerHTML,html1)){
+return el.innerHTML = html2;
+} else {
+return el.innerHTML = html1;
+}
+});
+conway.core.start_button_clicked = (function conway$core$start_button_clicked(){
+conway.core.toggle_class.call(null,"start","pure-button-active");
+
+conway.core.toggle_html.call(null,"start","Start","Stop");
+
+return conway.core.toggle.call(null,conway.core.game_switch);
+});
+conway.core.start_button = (function conway$core$start_button(){
+return new cljs.core.PersistentVector(null, 3, 5, cljs.core.PersistentVector.EMPTY_NODE, [new cljs.core.Keyword(null,"button.pure-button","button.pure-button",698850720),new cljs.core.PersistentArrayMap(null, 4, [new cljs.core.Keyword(null,"class","class",-2030961996),"pure-button pure-button-active",new cljs.core.Keyword(null,"onClick","onClick",-1991238530),conway.core.start_button_clicked,new cljs.core.Keyword(null,"key","key",-1516042587),"start",new cljs.core.Keyword(null,"id","id",-1388402092),"start"], null),"Stop"], null);
+});
+conway.core.title = (function conway$core$title(){
+return new cljs.core.PersistentVector(null, 4, 5, cljs.core.PersistentVector.EMPTY_NODE, [new cljs.core.Keyword(null,"div","div",1057191632),new cljs.core.PersistentArrayMap(null, 2, [new cljs.core.Keyword(null,"id","id",-1388402092),"title-bar",new cljs.core.Keyword(null,"class","class",-2030961996),"pure-u-1"], null),new cljs.core.PersistentVector(null, 2, 5, cljs.core.PersistentVector.EMPTY_NODE, [new cljs.core.Keyword(null,"h1","h1",-1896887462),"An Implementation of Conway's Game of Life"], null),conway.core.start_button.call(null)], null);
 });
 conway.core.cell = (function conway$core$cell(x,y,game){
 if(cljs.core.truth_(conway.game.alive_QMARK_.call(null,x,y,cljs.core.deref.call(null,game)))){
-return new cljs.core.PersistentVector(null, 2, 5, cljs.core.PersistentVector.EMPTY_NODE, [new cljs.core.Keyword(null,"div","div",1057191632),new cljs.core.PersistentArrayMap(null, 3, [new cljs.core.Keyword(null,"class","class",-2030961996),"cell alive",new cljs.core.Keyword(null,"key","key",-1516042587),[cljs.core.str("["),cljs.core.str(x),cljs.core.str(" "),cljs.core.str(y),cljs.core.str("]")].join(''),new cljs.core.Keyword(null,"onClick","onClick",-1991238530),(function (){
+return new cljs.core.PersistentVector(null, 2, 5, cljs.core.PersistentVector.EMPTY_NODE, [new cljs.core.Keyword(null,"td","td",1479933353),new cljs.core.PersistentArrayMap(null, 3, [new cljs.core.Keyword(null,"class","class",-2030961996),"cell alive",new cljs.core.Keyword(null,"key","key",-1516042587),[cljs.core.str("["),cljs.core.str(x),cljs.core.str(" "),cljs.core.str(y),cljs.core.str("]")].join(''),new cljs.core.Keyword(null,"onClick","onClick",-1991238530),(function (){
 return conway.core.click_cell.call(null,x,y,game);
 })], null)], null);
 } else {
-return new cljs.core.PersistentVector(null, 2, 5, cljs.core.PersistentVector.EMPTY_NODE, [new cljs.core.Keyword(null,"div","div",1057191632),new cljs.core.PersistentArrayMap(null, 3, [new cljs.core.Keyword(null,"class","class",-2030961996),"cell dead",new cljs.core.Keyword(null,"key","key",-1516042587),[cljs.core.str("["),cljs.core.str(x),cljs.core.str(" "),cljs.core.str(y),cljs.core.str("]")].join(''),new cljs.core.Keyword(null,"onClick","onClick",-1991238530),(function (){
+return new cljs.core.PersistentVector(null, 2, 5, cljs.core.PersistentVector.EMPTY_NODE, [new cljs.core.Keyword(null,"td","td",1479933353),new cljs.core.PersistentArrayMap(null, 3, [new cljs.core.Keyword(null,"class","class",-2030961996),"cell dead",new cljs.core.Keyword(null,"key","key",-1516042587),[cljs.core.str("["),cljs.core.str(x),cljs.core.str(" "),cljs.core.str(y),cljs.core.str("]")].join(''),new cljs.core.Keyword(null,"onClick","onClick",-1991238530),(function (){
 return conway.core.click_cell.call(null,x,y,game);
 })], null)], null);
 }
 });
 conway.core.row = (function conway$core$row(cells){
-return new cljs.core.PersistentVector(null, 3, 5, cljs.core.PersistentVector.EMPTY_NODE, [new cljs.core.Keyword(null,"div","div",1057191632),new cljs.core.PersistentArrayMap(null, 2, [new cljs.core.Keyword(null,"class","class",-2030961996),"row",new cljs.core.Keyword(null,"key","key",-1516042587),cljs.core.rand.call(null,(100))], null),cells], null);
-});
-conway.core.start_button = (function conway$core$start_button(){
-return new cljs.core.PersistentVector(null, 3, 5, cljs.core.PersistentVector.EMPTY_NODE, [new cljs.core.Keyword(null,"button","button",1456579943),new cljs.core.PersistentArrayMap(null, 2, [new cljs.core.Keyword(null,"onClick","onClick",-1991238530),(function (){
-conway.core.stop.call(null,conway.core.game_switch);
-
-return cljs.core.println.call(null,cljs.core.deref.call(null,conway.core.game_switch));
-}),new cljs.core.Keyword(null,"key","key",-1516042587),"start"], null),"Start/Stop"], null);
+return new cljs.core.PersistentVector(null, 3, 5, cljs.core.PersistentVector.EMPTY_NODE, [new cljs.core.Keyword(null,"tr","tr",-1424774646),new cljs.core.PersistentArrayMap(null, 3, [new cljs.core.Keyword(null,"class","class",-2030961996),"row",new cljs.core.Keyword(null,"key","key",-1516042587),cljs.core.rand.call(null,(100)),new cljs.core.Keyword(null,"style","style",-496642736),new cljs.core.PersistentArrayMap(null, 1, [new cljs.core.Keyword(null,"width","width",-384071477),[cljs.core.str((1.7 * cljs.core.count.call(null,cells))),cljs.core.str("em")].join('')], null)], null),cells], null);
 });
 conway.core.grid = (function conway$core$grid(){
-return new cljs.core.PersistentVector(null, 4, 5, cljs.core.PersistentVector.EMPTY_NODE, [new cljs.core.Keyword(null,"div","div",1057191632),new cljs.core.PersistentArrayMap(null, 1, [new cljs.core.Keyword(null,"key","key",-1516042587),"game"], null),new cljs.core.PersistentVector(null, 3, 5, cljs.core.PersistentVector.EMPTY_NODE, [new cljs.core.Keyword(null,"div","div",1057191632),new cljs.core.PersistentArrayMap(null, 1, [new cljs.core.Keyword(null,"key","key",-1516042587),"grid"], null),cljs.core.doall.call(null,cljs.core.map.call(null,conway.core.row,cljs.core.partition.call(null,new cljs.core.Keyword(null,"width","width",-384071477).cljs$core$IFn$_invoke$arity$1(cljs.core.deref.call(null,conway.core.game_state)),(function (){var iter__20969__auto__ = (function conway$core$grid_$_iter__23259(s__23260){
+return new cljs.core.PersistentVector(null, 3, 5, cljs.core.PersistentVector.EMPTY_NODE, [new cljs.core.Keyword(null,"table","table",-564943036),new cljs.core.PersistentArrayMap(null, 3, [new cljs.core.Keyword(null,"key","key",-1516042587),"grid",new cljs.core.Keyword(null,"id","id",-1388402092),"grid",new cljs.core.Keyword(null,"class","class",-2030961996),"pure-u-23-24"], null),new cljs.core.PersistentVector(null, 2, 5, cljs.core.PersistentVector.EMPTY_NODE, [new cljs.core.Keyword(null,"tbody","tbody",-80678300),cljs.core.doall.call(null,cljs.core.map.call(null,conway.core.row,cljs.core.partition.call(null,new cljs.core.Keyword(null,"width","width",-384071477).cljs$core$IFn$_invoke$arity$1(cljs.core.deref.call(null,conway.core.game_state)),(function (){var iter__20969__auto__ = (function conway$core$grid_$_iter__23279(s__23280){
 return (new cljs.core.LazySeq(null,(function (){
-var s__23260__$1 = s__23260;
+var s__23280__$1 = s__23280;
 while(true){
-var temp__4657__auto__ = cljs.core.seq.call(null,s__23260__$1);
+var temp__4657__auto__ = cljs.core.seq.call(null,s__23280__$1);
 if(temp__4657__auto__){
 var xs__5205__auto__ = temp__4657__auto__;
 var y = cljs.core.first.call(null,xs__5205__auto__);
-var iterys__20965__auto__ = ((function (s__23260__$1,y,xs__5205__auto__,temp__4657__auto__){
-return (function conway$core$grid_$_iter__23259_$_iter__23261(s__23262){
-return (new cljs.core.LazySeq(null,((function (s__23260__$1,y,xs__5205__auto__,temp__4657__auto__){
+var iterys__20965__auto__ = ((function (s__23280__$1,y,xs__5205__auto__,temp__4657__auto__){
+return (function conway$core$grid_$_iter__23279_$_iter__23281(s__23282){
+return (new cljs.core.LazySeq(null,((function (s__23280__$1,y,xs__5205__auto__,temp__4657__auto__){
 return (function (){
-var s__23262__$1 = s__23262;
+var s__23282__$1 = s__23282;
 while(true){
-var temp__4657__auto____$1 = cljs.core.seq.call(null,s__23262__$1);
+var temp__4657__auto____$1 = cljs.core.seq.call(null,s__23282__$1);
 if(temp__4657__auto____$1){
-var s__23262__$2 = temp__4657__auto____$1;
-if(cljs.core.chunked_seq_QMARK_.call(null,s__23262__$2)){
-var c__20967__auto__ = cljs.core.chunk_first.call(null,s__23262__$2);
+var s__23282__$2 = temp__4657__auto____$1;
+if(cljs.core.chunked_seq_QMARK_.call(null,s__23282__$2)){
+var c__20967__auto__ = cljs.core.chunk_first.call(null,s__23282__$2);
 var size__20968__auto__ = cljs.core.count.call(null,c__20967__auto__);
-var b__23264 = cljs.core.chunk_buffer.call(null,size__20968__auto__);
-if((function (){var i__23263 = (0);
+var b__23284 = cljs.core.chunk_buffer.call(null,size__20968__auto__);
+if((function (){var i__23283 = (0);
 while(true){
-if((i__23263 < size__20968__auto__)){
-var x = cljs.core._nth.call(null,c__20967__auto__,i__23263);
-cljs.core.chunk_append.call(null,b__23264,conway.core.cell.call(null,x,y,conway.core.game_state));
+if((i__23283 < size__20968__auto__)){
+var x = cljs.core._nth.call(null,c__20967__auto__,i__23283);
+cljs.core.chunk_append.call(null,b__23284,conway.core.cell.call(null,x,y,conway.core.game_state));
 
-var G__23265 = (i__23263 + (1));
-i__23263 = G__23265;
+var G__23285 = (i__23283 + (1));
+i__23283 = G__23285;
 continue;
 } else {
 return true;
@@ -79,29 +109,29 @@ return true;
 break;
 }
 })()){
-return cljs.core.chunk_cons.call(null,cljs.core.chunk.call(null,b__23264),conway$core$grid_$_iter__23259_$_iter__23261.call(null,cljs.core.chunk_rest.call(null,s__23262__$2)));
+return cljs.core.chunk_cons.call(null,cljs.core.chunk.call(null,b__23284),conway$core$grid_$_iter__23279_$_iter__23281.call(null,cljs.core.chunk_rest.call(null,s__23282__$2)));
 } else {
-return cljs.core.chunk_cons.call(null,cljs.core.chunk.call(null,b__23264),null);
+return cljs.core.chunk_cons.call(null,cljs.core.chunk.call(null,b__23284),null);
 }
 } else {
-var x = cljs.core.first.call(null,s__23262__$2);
-return cljs.core.cons.call(null,conway.core.cell.call(null,x,y,conway.core.game_state),conway$core$grid_$_iter__23259_$_iter__23261.call(null,cljs.core.rest.call(null,s__23262__$2)));
+var x = cljs.core.first.call(null,s__23282__$2);
+return cljs.core.cons.call(null,conway.core.cell.call(null,x,y,conway.core.game_state),conway$core$grid_$_iter__23279_$_iter__23281.call(null,cljs.core.rest.call(null,s__23282__$2)));
 }
 } else {
 return null;
 }
 break;
 }
-});})(s__23260__$1,y,xs__5205__auto__,temp__4657__auto__))
+});})(s__23280__$1,y,xs__5205__auto__,temp__4657__auto__))
 ,null,null));
-});})(s__23260__$1,y,xs__5205__auto__,temp__4657__auto__))
+});})(s__23280__$1,y,xs__5205__auto__,temp__4657__auto__))
 ;
 var fs__20966__auto__ = cljs.core.seq.call(null,iterys__20965__auto__.call(null,cljs.core.range.call(null,new cljs.core.Keyword(null,"width","width",-384071477).cljs$core$IFn$_invoke$arity$1(cljs.core.deref.call(null,conway.core.game_state)))));
 if(fs__20966__auto__){
-return cljs.core.concat.call(null,fs__20966__auto__,conway$core$grid_$_iter__23259.call(null,cljs.core.rest.call(null,s__23260__$1)));
+return cljs.core.concat.call(null,fs__20966__auto__,conway$core$grid_$_iter__23279.call(null,cljs.core.rest.call(null,s__23280__$1)));
 } else {
-var G__23266 = cljs.core.rest.call(null,s__23260__$1);
-s__23260__$1 = G__23266;
+var G__23286 = cljs.core.rest.call(null,s__23280__$1);
+s__23280__$1 = G__23286;
 continue;
 }
 } else {
@@ -112,26 +142,18 @@ break;
 }),null,null));
 });
 return iter__20969__auto__.call(null,cljs.core.range.call(null,new cljs.core.Keyword(null,"height","height",1025178622).cljs$core$IFn$_invoke$arity$1(cljs.core.deref.call(null,conway.core.game_state))));
-})())))], null),conway.core.start_button.call(null)], null);
+})())))], null)], null);
 });
-conway.core.generations_loop = (function conway$core$generations_loop(){
-conway.core.next_state.call(null,conway.core.game_state);
-
-cljs.core.println.call(null,"next");
-
-return setTimeout((function (){
-return conway$core$generations_loop.call(null);
-}),(1000));
+conway.core.app = (function conway$core$app(){
+return new cljs.core.PersistentVector(null, 4, 5, cljs.core.PersistentVector.EMPTY_NODE, [new cljs.core.Keyword(null,"div.app","div.app",-99849286),new cljs.core.PersistentArrayMap(null, 1, [new cljs.core.Keyword(null,"class","class",-2030961996),"pure-g"], null),conway.core.grid.call(null),conway.core.title.call(null)], null);
 });
 conway.core.mount_root = (function conway$core$mount_root(){
-return reagent.core.render_component.call(null,new cljs.core.PersistentVector(null, 1, 5, cljs.core.PersistentVector.EMPTY_NODE, [conway.core.grid], null),document.getElementById("app"));
+return reagent.core.render_component.call(null,new cljs.core.PersistentVector(null, 1, 5, cljs.core.PersistentVector.EMPTY_NODE, [conway.core.app], null),document.getElementById("app"));
 });
 conway.core.init_BANG_ = (function conway$core$init_BANG_(){
-reagent.core.render_component.call(null,new cljs.core.PersistentVector(null, 1, 5, cljs.core.PersistentVector.EMPTY_NODE, [conway.core.start_button], null),document.getElementById("app"));
-
 conway.core.mount_root.call(null);
 
-return conway.core.generations_loop.call(null);
+return conway.core.generations_loop.call(null,conway.core.game_switch);
 });
 
-//# sourceMappingURL=core.js.map?rel=1489693784096
+//# sourceMappingURL=core.js.map?rel=1489947109028
