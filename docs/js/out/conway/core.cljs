@@ -22,9 +22,6 @@
                         :run-function (fn [] (generations-loop game-switch))
                         :btn-class "pure-button-active"}))
 
-(defn click-cell [x y game]
-    (swap! game #(game/alternate x y %)))
-
 (defn toggle-class [id toggled-class]
   (let [el-classList (.-classList (.getElementById js/document id))]
     (if (.contains el-classList toggled-class)
@@ -57,11 +54,13 @@
    [:h1 "An Implementation of Conway's Game of Life"]
    (start-button)])
 
-(defn cell [x y state]
-   ^{:key (gensym (rand 10000))} [:td {:class (if (game/alive? x y @state)
-                                          "cell alive"
-                                          "cell dead") 
-           :onClick (fn [] (click-cell x y state))}])
+(defn cell [x y living]
+    [:td {:key (gensym (str x " " y))
+             :class (if @living 
+                      "cell alive"
+                      "cell dead") 
+           :onClick (fn [] (swap! living not))
+              }])
 
 (defn row [cells]
   (into [:tr {:class "row" :key (gensym (rand 1000))
@@ -76,17 +75,20 @@
        (partition width
                   (doall (for [y (range height) 
                                x (range width)] 
-                    [cell x y game-state])))))]])
+                    [cell  x y (reagent/cursor game-state 
+                                          [:grid (game/index x y width)])])))))]])
 
-(defn app [state]
+(defn app [w h]
   [:div.app {:class "pure-g"}
-   (grid (:width state) (:height state))
+   (grid @w @h)
    (title)])
 ;; -------------------------
 ;; Initialize app
 
 (defn mount-root []
-  (reagent/render-component [#(app {:width 40 :height 17})] (.getElementById js/document "app")))
+  (reagent/render-component [#(app (reagent/cursor game-state [:width])
+                                   (reagent/cursor game-state [:height]))] 
+                            (.getElementById js/document "app")))
 
 (defn init! []
   (do 

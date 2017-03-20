@@ -31,6 +31,9 @@
                 (map #(if %  "# " "0 ") (:grid game) )))
             (repeat "\n"))))
 
+(defn index [x y width]
+  (+ x (* y width)))
+
 (defn alive? [x y game]
   (nth (:grid game)
        (+ x (* y (:width game)))))
@@ -39,9 +42,10 @@
   (let [index (+ x (* y (:width game)))]
     (if (and (> (:width game) x) (> (:height game) y))
       (update game :grid 
-        #(concat (take index %) 
-                (if (alive? x y game) '(false) '(true)) 
-                (drop (inc index) %)))
+        #(into [] 
+              (concat (take index %) 
+                       (if (alive? x y game) '(false) '(true)) 
+                       (drop (inc index) %)))) 
       game)))
 
 (defn next-vals [x max-val]
@@ -73,9 +77,9 @@
 
 
 (defn next-gen [game-state] 
-   (for [y (range (:height game-state)) 
+   (into [] (for [y (range (:height game-state)) 
          x (range (:width game-state))]
-    (survives? x y game-state)))
+    (survives? x y game-state))))
 
 (defn play-round [game]
   (update game
