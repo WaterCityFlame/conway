@@ -57,36 +57,36 @@
    [:h1 "An Implementation of Conway's Game of Life"]
    (start-button)])
 
-(defn cell [x y game]
-  (if (game/alive? x y @game)
-    [:td {:class "cell alive" :key (str "[" x " " y "]")
-           :onClick (fn [] (click-cell x y game))} ] 
-    [:td {:class "cell dead" :key (str "[" x " " y "]")
-           :onClick (fn [] (click-cell x y game))} ]))
+(defn cell [x y state]
+   ^{:key (gensym (rand 10000))} [:td {:class (if (game/alive? x y @state)
+                                          "cell alive"
+                                          "cell dead") 
+           :onClick (fn [] (click-cell x y state))}])
 
 (defn row [cells]
-  [:tr {:class "row" 
-        :key (rand 100) 
-        :style {:width (str (* 1.7 (count cells)) "em")}} 
-   cells])
+  (into [:tr {:class "row" :key (gensym (rand 1000))
+                                :style {:width (str 
+                                                 (* 1.7 (count cells)) 
+                                                 "em")}} ]
+                           cells))
 
-(defn grid []
+(defn grid [width height]
  [:table {:key "grid" :id "grid" :class "pure-u-23-24"} [:tbody
-  (doall (map row 
-       (partition (:width @game-state) 
-                  (for [y (range (:height @game-state)) 
-                        x (range (:width @game-state))] 
-                    (cell x y game-state)))))]])
+   (doall (map row 
+       (partition width
+                  (doall (for [y (range height) 
+                               x (range width)] 
+                    [cell x y game-state])))))]])
 
-(defn app []
+(defn app [state]
   [:div.app {:class "pure-g"}
-   (grid)
+   (grid (:width state) (:height state))
    (title)])
 ;; -------------------------
 ;; Initialize app
 
 (defn mount-root []
-  (reagent/render-component [app] (.getElementById js/document "app")))
+  (reagent/render-component [#(app {:width 40 :height 17})] (.getElementById js/document "app")))
 
 (defn init! []
   (do 
