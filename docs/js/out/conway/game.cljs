@@ -43,9 +43,9 @@
     (if (and (> (:width game) x) (> (:height game) y))
       (update game :grid 
         #(into [] 
-              (concat (take index %) 
+              (concat (subvec % 0 index) 
                        (if (alive? x y game) '(false) '(true)) 
-                       (drop (inc index) %)))) 
+                       (subvec % (inc index))))) 
       game)))
 
 (defn next-vals [x max-val]
